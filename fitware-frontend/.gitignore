@@ -1,0 +1,11 @@
+# Angular / Node
+node_modules/
+package-lock.json
+dist/
+.tmp/
+.DS_Store
+coverage/
+
+# IDE
+.vscode/
+.idea/

@@ -1,0 +1,122 @@
+<section class="reportes">
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <div class="d-flex flex-column flex-lg-row align-items-lg-end justify-content-between gap-3">
+        <form [formGroup]="filtroForm" (ngSubmit)="consultar()" class="row gy-3 gx-3 flex-grow-1">
+          <div class="col-md-3">
+            <label class="form-label text-muted">Rango rápido</label>
+            <select class="form-select" formControlName="preset" (change)="onPresetChange()">
+              <option *ngFor="let rango of rangosRapidos" [value]="rango.id">{{ rango.label }}</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label text-muted">Desde</label>
+            <input type="date" class="form-control" formControlName="desde" (change)="marcarPersonalizado()">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label text-muted">Hasta</label>
+            <input type="date" class="form-control" formControlName="hasta" (change)="marcarPersonalizado()">
+          </div>
+          <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100" [disabled]="loading">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              Actualizar datos
+            </button>
+          </div>
+        </form>
+        <button type="button" class="btn btn-outline-secondary" (click)="descargar()" [disabled]="downloading || loading">
+          <span *ngIf="downloading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          Descargar PDF
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <div>
+          <h5 class="mb-0">Selecciona los reportes a generar</h5>
+          <small class="text-muted">Puedes activar varios reportes y cambiar el mes rápidamente.</small>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-sm btn-outline-secondary" (click)="limpiarSeleccion()">Limpiar</button>
+          <button type="button" class="btn btn-sm btn-outline-primary" (click)="seleccionarTodo()">Seleccionar todo</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-4" *ngFor="let categoria of categorias">
+          <div class="reporte-opciones">
+            <h6>{{ categoria.titulo }}</h6>
+            <p class="text-muted small">{{ categoria.descripcion }}</p>
+            <div class="form-check" *ngFor="let opcion of opcionesPorCategoria(categoria.id)">
+              <input class="form-check-input" type="checkbox" [id]="opcion.id" [checked]="isSelected(opcion.id)"
+                     (change)="toggleSectionFromEvent(opcion.id, $event)">
+              <label class="form-check-label d-block" [for]="opcion.id">
+                <span class="fw-semibold">{{ opcion.label }}</span>
+                <small class="text-muted d-block" *ngIf="opcion.helper">{{ opcion.helper }}</small>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+  <div *ngIf="!error && loading" class="alert alert-info d-flex align-items-center gap-2">
+    <span class="spinner-border spinner-border-sm"></span>
+    <span>Cargando información…</span>
+  </div>
+  <div *ngIf="!loading && resumen" class="alert alert-light border">
+    <strong>Periodo:</strong> {{ resumen.from }} al {{ resumen.to }}
+    <span class="ms-4" *ngIf="ultimaActualizacion">
+      <strong>Última generación:</strong> {{ ultimaActualizacion }}
+    </span>
+  </div>
+
+  <ng-container *ngIf="resumen">
+    <ng-container *ngFor="let categoria of categorias">
+      <div class="category-title">
+        <h4>{{ categoria.titulo }}</h4>
+        <p class="text-muted mb-0">{{ categoria.descripcion }}</p>
+      </div>
+
+      <ng-container *ngIf="sectionsBy(categoria.id).length; else sinInformacion">
+        <div *ngFor="let section of sectionsBy(categoria.id)" class="card shadow-sm mb-4">
+          <div class="card-header bg-white">
+            <h5 class="mb-1">{{ section.title }}</h5>
+            <small class="text-muted">{{ section.description }}</small>
+          </div>
+          <div class="card-body">
+            <div *ngIf="tieneFilas(section); else tablaVacia" class="table-responsive">
+              <table class="table table-sm align-middle table-striped mb-0">
+                <thead>
+                  <tr>
+                    <th *ngFor="let header of section.headers">{{ header }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let fila of section.rows">
+                    <td *ngFor="let columna of fila">{{ columna }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <ng-template #tablaVacia>
+              <p class="text-muted mb-0">No hay datos para mostrar con los filtros actuales.</p>
+            </ng-template>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+
+    <ng-template #sinInformacion>
+      <div class="card card-empty mb-4">
+        <div class="card-body text-muted text-center">
+          Aún no hay información disponible para esta categoría.
+        </div>
+      </div>
+    </ng-template>
+  </ng-container>
+</section>

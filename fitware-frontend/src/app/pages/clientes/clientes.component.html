@@ -1,0 +1,134 @@
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card card-glass h-100">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="h4 section-title mb-0">{{ editMode ? 'Editar cliente' : 'Registro de cliente' }}</h2>
+          <button *ngIf="editMode" class="btn btn-outline-secondary btn-sm" type="button" (click)="cancelarEdicion()">Cancelar</button>
+        </div>
+        <form [formGroup]="registroForm" (ngSubmit)="guardarCliente()" class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Cedula</label>
+            <input class="form-control" formControlName="cedula">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Nombre</label>
+            <input class="form-control" formControlName="nombre">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Apellidos</label>
+            <input class="form-control" formControlName="apellidos">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Fecha nacimiento</label>
+            <input type="date" class="form-control" formControlName="fechaNacimiento">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Telefono</label>
+            <input class="form-control" formControlName="telefono">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Genero</label>
+            <select class="form-select" formControlName="genero">
+              <option value="" disabled>Seleccione</option>
+              <option *ngFor="let genero of generos" [value]="genero">{{ genero }}</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Fecha registro</label>
+            <input type="date" class="form-control" formControlName="fechaRegistro">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Peso inicial (kg)</label>
+            <input type="number" class="form-control" formControlName="pesoInicial" step="0.1">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Altura inicial (m)</label>
+            <input type="number" class="form-control" formControlName="alturaInicial" step="0.01">
+          </div>
+          <div class="col-12 d-flex justify-content-end">
+            <button class="btn btn-gradient px-4" type="submit" [disabled]="loading">
+              <i class="bi" [ngClass]="editMode ? 'bi-save' : 'bi-person-plus'"></i>
+              {{ loading ? 'Guardando...' : (editMode ? 'Guardar cambios' : 'Registrar cliente') }}
+            </button>
+          </div>
+        </form>
+        <div class="alert alert-success mt-3" *ngIf="mensajeExito">{{ mensajeExito }}</div>
+        <div class="alert alert-danger mt-3" *ngIf="mensajeError">{{ mensajeError }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card card-glass h-100">
+      <div class="card-body">
+        <h2 class="h4 section-title mb-3">Seguimiento de progreso</h2>
+        <p class="text-secondary">Consulta o actualiza el progreso de un cliente existente.</p>
+        <form [formGroup]="seguimientoForm" (ngSubmit)="irAProgreso()" class="d-flex gap-3 mt-3">
+          <input class="form-control" placeholder="Cedula del cliente" formControlName="cedula">
+          <button class="btn btn-outline-primary" type="submit">Gestionar</button>
+        </form>
+        <div class="mt-4">
+          <h3 class="h6 text-primary">Que puedes hacer?</h3>
+          <ul class="list-unstyled small text-secondary mb-0">
+            <li class="d-flex align-items-center gap-2"><i class="bi bi-check2-circle text-primary"></i> Registrar nuevas mediciones corporales.</li>
+            <li class="d-flex align-items-center gap-2"><i class="bi bi-check2-circle text-primary"></i> Editar o eliminar registros anteriores.</li>
+            <li class="d-flex align-items-center gap-2"><i class="bi bi-check2-circle text-primary"></i> Orden cronologico automatico.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card card-glass mt-4">
+  <div class="card-body">
+    <div class="d-flex flex-column flex-md-row gap-3 align-items-md-center mb-3">
+      <h2 class="h5 section-title mb-0">Clientes registrados</h2>
+      <div class="ms-md-auto w-100 w-md-25">
+        <input type="search" class="form-control" placeholder="Buscar por cedula o nombre..." (input)="filtrar($any($event.target).value)">
+      </div>
+    </div>
+
+    <div class="table-responsive" *ngIf="filtered.length; else vacio">
+      <table class="table table-fitware align-middle">
+        <thead>
+          <tr>
+            <th>Cedula</th>
+            <th>Nombre</th>
+            <th>Contacto</th>
+            <th>Fecha registro</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cliente of filtered">
+            <td class="fw-semibold">{{ cliente.usuarioCedula }}</td>
+            <td>
+              <div class="fw-semibold">{{ cliente.usuario?.nombre }} {{ cliente.usuario?.apellidos }}</div>
+              <div class="small text-secondary">
+                {{ cliente.usuario?.genero || '' }}
+                <span *ngIf="cliente.usuario?.genero && cliente.usuario?.fechaNacimiento">-</span>
+                <span *ngIf="cliente.usuario?.fechaNacimiento">{{ cliente.usuario?.fechaNacimiento | date:'mediumDate' }}</span>
+              </div>
+            </td>
+            <td>
+              <div>{{ cliente.usuario?.telefono || '' }}</div>
+            </td>
+            <td>{{ cliente.fechaRegistro | date:'mediumDate' }}</td>
+            <td class="text-end">
+              <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-primary" type="button" (click)="editar(cliente)"><i class="bi bi-pencil-square"></i></button>
+                <button class="btn btn-outline-danger" type="button" (click)="eliminar(cliente)"><i class="bi bi-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ng-template #vacio>
+      <div class="text-center text-secondary py-4">Aun no hay clientes registrados.</div>
+    </ng-template>
+  </div>
+</div>

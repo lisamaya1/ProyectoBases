@@ -1,0 +1,115 @@
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card card-glass h-100">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="h5 section-title mb-0">Sesiones</h2>
+          <button class="btn btn-outline-primary btn-sm" (click)="cargarSesiones()"><i class="bi bi-arrow-clockwise"></i></button>
+        </div>
+        <form [formGroup]="filtroForm" (ngSubmit)="filtrar()" class="d-flex gap-2 mb-3">
+          <input class="form-control" placeholder="Filtrar por cédula" formControlName="clienteCedula">
+          <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+        </form>
+        <button class="btn btn-gradient w-100 mb-3" (click)="iniciarCreacion()">Nueva sesión</button>
+        <div *ngIf="loadingSesiones" class="text-center py-4"><div class="spinner-border text-primary"></div></div>
+        <div class="list-group gap-2" *ngIf="!loadingSesiones">
+          <div class="list-group-item list-group-item-action" *ngFor="let sesion of sesiones" (click)="seleccionarSesion(sesion)" [class.active]="selectedSesion?.id === sesion.id">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <div class="fw-semibold">{{ sesion.estado }}</div>
+
+                <small class="text-secondary">Cliente: {{ sesion.clienteCedula || sesion.cliente?.usuarioCedula || 'N/A' }}</small>
+              </div>
+              <button class="btn btn-link text-danger p-0" (click)="$event.stopPropagation(); eliminarSesion(sesion)"><i class="bi bi-trash"></i></button>
+            </div>
+            <small class="text-secondary d-block">Inicio: {{ sesion.fechaInicio | date: 'short' }}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card card-glass h-100">
+      <div class="card-body">
+        <h2 class="h5 section-title mb-3">{{ selectedSesion ? 'Detalle de sesión' : 'Crear sesión' }}</h2>
+        <form [formGroup]="sesionForm" (ngSubmit)="guardarSesion()" class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Cliente cédula</label>
+            <input class="form-control" formControlName="clienteCedula">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Estado</label>
+            <select class="form-select" formControlName="estado">
+              <option value="" disabled>Selecciona estado</option>
+                <option *ngFor="let estado of estadosSesion" [value]="estado">{{ estado }}</option>
+            </select>
+            <small class="text-secondary">Valores permitidos: {{ estadosSesion.join(', ') }}</small>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Gasto calórico</label>
+            <input type="number" class="form-control" formControlName="gastoCalorico" step="0.1">
+            <small class="text-secondary">Ingresa calorías estimadas (puede dejarlo en blanco)</small>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Inicio</label>
+            <input type="datetime-local" class="form-control" formControlName="fechaInicio">
+            <small class="text-secondary">Formato 24h, ejemplo: 2025-03-15T18:30</small>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Fin</label>
+            <input type="datetime-local" class="form-control" formControlName="fechaFin">
+            <small class="text-secondary">Debe ser posterior al inicio (opcional si aún no finaliza)</small>
+          </div>
+          <div class="col-12 d-flex justify-content-end">
+            <button class="btn btn-gradient px-4" type="submit" [disabled]="saving">{{ saving ? 'Guardando...' : 'Guardar sesión' }}</button>
+          </div>
+        </form>
+
+        <hr class="my-4">
+
+        <div *ngIf="selectedSesion">
+          <h3 class="h6 text-primary mb-3">Asignar ejercicio</h3>
+          <form [formGroup]="ejercicioForm" (ngSubmit)="asignarEjercicio()" class="row g-3">
+            <div class="col-md-3">
+              <input type="number" class="form-control" placeholder="ID ejercicio" formControlName="ejercicioId">
+            </div>
+            <div class="col-md-3">
+              <input type="number" class="form-control" placeholder="Reps" formControlName="repeticiones">
+            </div>
+            <div class="col-md-3">
+              <input type="number" class="form-control" placeholder="Series" formControlName="series">
+            </div>
+            <div class="col-md-3">
+              <select class="form-select" formControlName="estado">
+                <option value="Pendiente">Pendiente</option>
+                <option value="Completado">Completado</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <button class="btn btn-outline-primary" type="submit" [disabled]="saving">Asignar</button>
+            </div>
+          </form>
+
+          <div class="mt-4">
+            <h3 class="h6 text-primary">Ejercicios asignados</h3>
+            <div *ngIf="loadingEjercicios" class="text-center py-4"><div class="spinner-border text-primary"></div></div>
+            <div *ngIf="!loadingEjercicios && !ejercicios.length" class="text-secondary py-3">No hay ejercicios asignados.</div>
+            <div class="list-group" *ngIf="!loadingEjercicios && ejercicios.length">
+              <div class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let item of ejercicios">
+                <div>
+                  <div class="fw-semibold">Ejercicio ID {{ item.ejercicioId }}</div>
+                  <small class="text-secondary">{{ item.repeticiones }} repeticiones · {{ item.series }} series · {{ item.estado }}</small>
+                </div>
+                <button class="btn btn-link text-danger p-0" (click)="eliminarAsignacion(item)"><i class="bi bi-trash"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert alert-success mt-3" *ngIf="mensajeExito">{{ mensajeExito }}</div>
+        <div class="alert alert-danger mt-3" *ngIf="error">{{ error }}</div>
+      </div>
+    </div>
+  </div>
+</div>

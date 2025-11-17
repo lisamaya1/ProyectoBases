@@ -1,0 +1,33 @@
+<section class="hero py-5">
+  <div class="row align-items-center g-5">
+    <div class="col-lg-6">
+      <h1 class="display-5 fw-bold text-dark mb-4">
+        Control total de tus <span class="text-gradient">programas fitness</span>
+      </h1>
+      <p class="lead text-secondary">
+        Fitware centraliza la gestión de clientes, rutinas, planes alimenticios y sesiones de entrenamiento.
+        
+      </p>
+      <div class="d-flex gap-3 mt-4">
+        <a routerLink="/clientes" class="btn btn-gradient btn-lg px-4">Registrar cliente</a>
+        <a routerLink="/rutinas" class="btn btn-outline-primary btn-lg px-4">Gestionar rutinas</a>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card card-glass border-0 p-4 shadow-lg">
+        <h2 class="h4 fw-semibold text-primary mb-3">Resumen funcional</h2>
+        <ul class="list-unstyled mb-0">
+          <li class="d-flex align-items-start gap-3 py-3 border-bottom" *ngFor="let item of highlights">
+            <div class="icon rounded-circle bg-primary-subtle text-primary p-3">
+              <i class="bi" [ngClass]="item.icon"></i>
+            </div>
+            <div>
+              <h3 class="h6 fw-semibold mb-1">{{ item.title }}</h3>
+              <p class="mb-0 text-secondary">{{ item.description }}</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,44 @@
+.reportes {
+  .category-title {
+    margin: 2rem 0 1rem;
+    padding-left: 0.5rem;
+    border-left: 4px solid var(--bs-primary);
+
+    h4 {
+      margin-bottom: 0.25rem;
+    }
+  }
+
+  .card-empty {
+    border-style: dashed;
+  }
+
+  .reporte-opciones {
+    background-color: #f8f9fb;
+    border: 1px solid #e5e7ef;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+
+    h6 {
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      color: var(--bs-secondary);
+    }
+
+    .form-check {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  table {
+    font-size: 0.95rem;
+
+    th {
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+  }
+}

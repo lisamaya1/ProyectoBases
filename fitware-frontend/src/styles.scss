@@ -1,0 +1,79 @@
+@use "bootstrap/scss/bootstrap";
+
+:root {
+  --color-primary: #7c3aed;
+  --color-secondary: #14b8a6;
+  --color-dark: #0f172a;
+  --color-light: #f8fafc;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(120deg, rgba(124,58,237,0.08), rgba(20,184,166,0.08));
+  min-height: 100vh;
+  color: var(--color-dark);
+}
+
+a {
+  text-decoration: none;
+}
+
+.btn-gradient {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  border: none;
+  color: #fff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0.5rem 1.5rem rgba(124, 58, 237, 0.25);
+  }
+}
+
+.card-glass {
+  backdrop-filter: blur(14px);
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(124, 58, 237, 0.12);
+  box-shadow: 0 1rem 2.5rem rgba(15, 23, 42, 0.08);
+  border-radius: 1.25rem;
+}
+
+.section-title {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.badge-soft {
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+.table-fitware thead {
+  background: rgba(124, 58, 237, 0.1);
+  color: var(--color-primary);
+}
+
+.table-fitware tbody tr {
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(124, 58, 237, 0.08);
+  }
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 0.25rem rgba(124, 58, 237, 0.16);
+}
+
+nav.navbar {
+  background: rgba(15, 23, 42, 0.95);
+}
+
+nav.navbar .navbar-brand,
+nav.navbar .nav-link,
+nav.navbar .navbar-toggler-icon {
+  color: #fff !important;
+}

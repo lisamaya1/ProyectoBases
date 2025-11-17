@@ -1,0 +1,19 @@
+.list-group-item {
+  border-radius: 1rem !important;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  &.active {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    border: none;
+    color: #fff;
+  }
+}
+
+.card {
+  border-radius: 1.25rem;
+}

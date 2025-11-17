@@ -1,0 +1,15 @@
+.hero {
+  .text-gradient {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .icon {
+    font-size: 1.5rem;
+  }
+}
+
+.card {
+  border-radius: 1.25rem;
+}

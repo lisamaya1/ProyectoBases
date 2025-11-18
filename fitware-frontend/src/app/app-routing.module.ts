@@ -11,7 +11,7 @@ import { ReportesComponent } from './pages/reportes/reportes.component';
 import { LoginComponent } from './pages/login/login.component';
 
 const routes: Routes = [
-  { path: '', component: DashboardComponent },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'ejercicios', component: EjerciciosComponent },
   { path: 'clientes', component: ClientesComponent },
   { path: 'clientes/:cedula/progreso', component: ClienteProgresoComponent },
@@ -19,6 +19,8 @@ const routes: Routes = [
   { path: 'sesiones', component: SesionesComponent },
   { path: 'reportes', component: ReportesComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'dashboard', component: DashboardComponent },
+  { path: 'inicio', component: DashboardComponent },
   { path: '**', component: NotFoundComponent }
 ];
 
